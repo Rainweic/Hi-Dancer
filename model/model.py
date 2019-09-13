@@ -1,16 +1,18 @@
-import cv2
-import time
-from matplotlib import pyplot as plt
-from gluoncv import model_zoo, data, utils
+import mxnet as mx
+from gluoncv import model_zoo, data
 from gluoncv.data.transforms.pose import detector_to_simple_pose, heatmap_to_coord
 
 def load_model(detector_name='yolo3_mobilenet1.0_coco', pose_net_name='simple_pose_resnet18_v1b', use_gpu=True):
     
     '''
-    detector_name detector模型名
-    pose_net_name pose_net模型名
-    use_gpu 是否使用gpu
-    return net 返回模型
+    加载模型
+
+    input:
+        detector_name(Str):     detector模型名
+        pose_net_name(Str):     pose_net模型名
+        use_gpu(bool):          是否使用gpu
+    return 
+        net(dict):             模型
     '''
 
     if use_gpu == False:
@@ -35,15 +37,20 @@ def load_model(detector_name='yolo3_mobilenet1.0_coco', pose_net_name='simple_po
 
 def detection(net, image, use_gpu):
     '''
-    net 模型
-    image 图片
-    use_gpu 是否使用gpu
-    return pred, img 返回pred字典和图片
+    进行预测：
+
+    input:
+        net(dict):     模型
+        image(str):     图片路径
+        use_gpu(bool):  是否使用gpu
+    return:
+        pred(dict):     包含各种信息的字典
+        img(numpy):     图片
     '''
-    if use_gpu == False:
-        ctx = mx.cpu()
-    else :
+    if use_gpu:
         ctx = mx.gpu()
+    else :
+        ctx = mx.cpu()
         
     x, img = data.transforms.presets.ssd.load_test(image, short=512)
     x = x.as_in_context(ctx)
@@ -53,7 +60,16 @@ def detection(net, image, use_gpu):
     pose_input = pose_input.as_in_context(ctx)
     predicted_heatmap = net['pose_net'](pose_input)
     pred_coords, confidence = heatmap_to_coord(predicted_heatmap, upscale_bbox)
-    pred = {'class_IDs':class_IDs, 'scores':scores, 'bounding_boxs':bounding_boxs, 'pred_coords':pred_coords, 'confidence':confidence}
+    
+    if use_gpu:
+        # pred_coords转移至GPU
+        pred_coords = pred_coords.as_in_context(mx.gpu())
+
+    pred = {'class_IDs': class_IDs, 
+            'scores': scores, 
+            'bounding_boxs': bounding_boxs, 
+            'pred_coords': pred_coords, 
+            'confidence': confidence}
     return pred, img
 
 
