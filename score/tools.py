@@ -1,4 +1,4 @@
-from mxnet import nd
+from mxnet import nd, cpu, gpu
 
 def normalization(x):
     '''
@@ -23,7 +23,7 @@ def normalization(x):
     y = x / dis
     return dis, y
 
-def matching(sample_pose, player_pose):
+def matching(sample_pose, player_pose, use_gpu=False):
     '''
     比较样本动作与玩家动作是否匹配，并返回匹配得分（0-17）
 
@@ -34,14 +34,19 @@ def matching(sample_pose, player_pose):
         score(int):             匹配得分
     '''
 
+    if use_gpu:
+        device = gpu()
+    else:
+        device = cpu()
+
     r = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 
          0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
 
     x_square = nd.square(sample_pose[:, 0] - player_pose[:, 0])
     y_square = nd.square(sample_pose[:, 1] - player_pose[:, 1])
-    r_square = nd.square(nd.array(r))
+    r_square = nd.square(nd.array(r, ctx=device))
 
     distant = x_square + y_square - r_square
-    score = len(distant <= 0)
+    score = nd.sum(distant <= 0).asnumpy()[0]
 
     return score
