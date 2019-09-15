@@ -1,0 +1,92 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'DcDesigner.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 572)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
+        self.horizontalSlider.setGeometry(QtCore.QRect(70, 400, 661, 20))
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
+        self.layoutWidget.setGeometry(QtCore.QRect(50, 450, 701, 81))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(13)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.lb_frameID = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_frameID.setObjectName("lb_frameID")
+        self.horizontalLayout.addWidget(self.lb_frameID)
+        self.frameID = QtWidgets.QLabel(self.layoutWidget)
+        self.frameID.setObjectName("frameID")
+        self.horizontalLayout.addWidget(self.frameID)
+        self.lb_Score = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_Score.setObjectName("lb_Score")
+        self.horizontalLayout.addWidget(self.lb_Score, 0, QtCore.Qt.AlignHCenter)
+        self.Score = QtWidgets.QComboBox(self.layoutWidget)
+        self.Score.setObjectName("Score")
+        self.Score.addItem("")
+        self.Score.addItem("")
+        self.Score.addItem("")
+        self.Score.addItem("")
+        self.Score.addItem("")
+        self.horizontalLayout.addWidget(self.Score)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.lb_reacTime = QtWidgets.QLabel(self.layoutWidget)
+        self.lb_reacTime.setObjectName("lb_reacTime")
+        self.horizontalLayout_2.addWidget(self.lb_reacTime)
+        self.reacTime = QtWidgets.QLineEdit(self.layoutWidget)
+        self.reacTime.setObjectName("reacTime")
+        self.horizontalLayout_2.addWidget(self.reacTime)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.chooseVideo = QtWidgets.QPushButton(self.layoutWidget)
+        self.chooseVideo.setObjectName("chooseVideo")
+        self.horizontalLayout_2.addWidget(self.chooseVideo)
+        self.addAction = QtWidgets.QPushButton(self.layoutWidget)
+        self.addAction.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        self.addAction.setObjectName("addAction")
+        self.horizontalLayout_2.addWidget(self.addAction)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(60, 40, 681, 331))
+        self.label.setText("")
+        self.label.setObjectName("label")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "关卡制作"))
+        self.lb_frameID.setText(_translate("MainWindow", "当前帧ID："))
+        self.frameID.setText(_translate("MainWindow", "TextLabel"))
+        self.lb_Score.setText(_translate("MainWindow", "玩家得分："))
+        self.Score.setItemText(0, _translate("MainWindow", "再接再厉！(2分)"))
+        self.Score.setItemText(1, _translate("MainWindow", "有点优秀！(4分)"))
+        self.Score.setItemText(2, _translate("MainWindow", "做的不错！(6分)"))
+        self.Score.setItemText(3, _translate("MainWindow", "锋芒毕露！(8分)"))
+        self.Score.setItemText(4, _translate("MainWindow", "非常Nice！(10分)"))
+        self.lb_reacTime.setText(_translate("MainWindow", "反应时间："))
+        self.chooseVideo.setText(_translate("MainWindow", "选择视频文件"))
+        self.addAction.setText(_translate("MainWindow", "添加当前动作"))
+
