@@ -7,7 +7,7 @@
 import os
 import cv2 as cv
 from score import tools
-from model import model
+from model import net
 
 os.environ['MXNET_CUDNN_AUTOTUNE_DEFAULT'] = str(0)
 
@@ -17,9 +17,9 @@ playerUrl = "./image/test3.jpeg"
 
 #加载模型并获得预测结果
 use_gpu = True
-net = model.load_model(use_gpu=use_gpu)
-showerPre , showerImage = model.detection(net, showerUrl, use_gpu)
-playerPre , playerImage = model.detection(net, playerUrl, use_gpu)
+model = net.load_model(use_gpu=use_gpu)
+showerPre , showerImage = net.detection(model, showerUrl, use_gpu)
+playerPre , playerImage = net.detection(model, playerUrl, use_gpu)
 
 #归一化
 showerDis ,showerSkeleton = tools.normalization(showerPre['pred_coords'][0])
