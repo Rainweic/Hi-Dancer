@@ -1,14 +1,13 @@
 # 该类继承DcDesigner_UI.py
 # UI 设置均在父类中
 # 本类实现界面的逻辑功能
-# https://blog.csdn.net/aaa_a_b_c/article/details/80367147
 
 import sys
 sys.path.append("../")
-import cv2 as cv
 import PyQt5 as Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from PyQt5.QtMultimedia import  *
 from DcDesigner_UI import Ui_MainWindow
 # from model.net import load_model, detection
 # from score.tools import tools
@@ -18,15 +17,20 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(DcDesigner, self).__init__()
         self.play = False
-        self.videoPath = None
-        self.fps = 0
+        self.videoLength = 0.1
         # 初始化UI
         self.setupUi(self)
         self.showCenter()
         self.load_model()
+        # 播放器
+        self.player = QMediaPlayer(self)
+        self.player.setVideoOutput(self.videoWidget)
         # 槽绑定
         self.chooseVideo.triggered.connect(self.chooseVideoFile)
         self.playOrStop.clicked.connect(self.playAndStop)
+        self.player.positionChanged.connect(self.setSlide)
+        self.horizontalSlider.sliderReleased.connect(self.changePosition)
+        self.addAction.clicked.connect(self.saveAction)
 
     def load_model(self):
         '''
@@ -60,36 +64,41 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         self.move(x, y)
 
     def chooseVideoFile(self):
-        self.videoPath, filetype = QFileDialog.getOpenFileName(self, "选择视频文件")
-        # 读取视频
-        self.videoCap = cv.VideoCapture(self.videoPath)
-        self.size = (int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),  
-                int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))) 
-
+        self.player.setMedia(QMediaContent(QFileDialog.getOpenFileUrl()[0]))
+        
     def playAndStop(self):
-        if self.play:
+        if not self.play:
+            # 开始播放
             self.playOrStop.setText("暂停")
             self.play = True
-            # 播放函数
+            self.player.play()
+            # 设置进度条长度
+            self.videoLength = self.player.duration()
         else:
+            # 暂停
             self.playOrStop.setText("播放")
             self.play = False
-            # 暂停函数
-        pass
+            self.player.pause()
 
-    def playVideo(self):
-        # 播放地址为空 提示警报
-        if not self.videoPath:
-            warningMessage = QMessageBox.warning(self, "警告！", "请先选择视频文件！")
-            if warningMessage == QMessageBox.Close:
-                return None
-        while self.play:
-            pass
+    def setSlide(self):
+        '''
+        播放进度与进度条绑定
+        '''
+        self.horizontalSlider.setMaximum(self.videoLength)
+        self.horizontalSlider.setValue(self.player.position())
+        self.frameID.setText(str(self.player.position()))
+
+    def changePosition(self):
+        '''
+        进度条改变视频位置改变
+        '''
+        self.player.setPosition(self.horizontalSlider.value())
 
     def saveAction(self):
         '''
         保存当前帧拥有的动作骨架
         '''
+        print(self.player.currentMedia())
         pass    
 
 if __name__ == "__main__":

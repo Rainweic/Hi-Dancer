@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimediaWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -72,10 +72,9 @@ class Ui_MainWindow(object):
         self.addAction.setObjectName("addAction")
         self.horizontalLayout_2.addWidget(self.addAction)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(60, 40, 681, 331))
-        self.label.setText("")
-        self.label.setObjectName("label")
+        self.videoWidget = QtMultimediaWidgets.QVideoWidget(self.centralwidget)
+        self.videoWidget.setGeometry(QtCore.QRect(60, 40, 681, 331))
+        self.videoWidget.setObjectName("videoWidget")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -97,7 +96,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "关卡制作"))
-        self.lb_frameID.setText(_translate("MainWindow", "当前帧ID："))
+        self.lb_frameID.setText(_translate("MainWindow", "当前时间(ms)："))
         self.lb_Score.setText(_translate("MainWindow", "玩家得分："))
         self.Score.setItemText(0, _translate("MainWindow", "再接再厉！(2分)"))
         self.Score.setItemText(1, _translate("MainWindow", "有点优秀！(4分)"))

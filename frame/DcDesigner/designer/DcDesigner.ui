@@ -167,7 +167,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QWidget" name="videoWidget" native="true">
     <property name="geometry">
      <rect>
       <x>60</x>
@@ -175,9 +175,6 @@
       <width>681</width>
       <height>331</height>
      </rect>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
   </widget>
