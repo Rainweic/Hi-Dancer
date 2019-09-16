@@ -2,6 +2,7 @@
 # UI 设置均在父类中
 # 本类实现界面的逻辑功能
 
+import os
 import sys
 sys.path.append("..")
 import cv2 as cv
@@ -14,6 +15,8 @@ from model import net
 from score import tools
 
 class DcDesigner(QMainWindow, Ui_MainWindow):
+
+    SAVE_PATH = "../poseinfo"
 
     def __init__(self):
         super(DcDesigner, self).__init__()
@@ -66,9 +69,11 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         self.move(x, y)
 
     def chooseVideoFile(self):
-        self.videoPath = QFileDialog.getOpenFileUrl()[0]
-        self.player.setMedia(QMediaContent(self.videoPath))
-        self.videoCapTure = cv.VideoCapture(str(self.videoPath)[25:-2])
+        videoPathQT = QFileDialog.getOpenFileUrl()[0]
+        self.videoPath = str(videoPathQT)[25:-2]
+        self.player.setMedia(QMediaContent(videoPathQT))
+        self.videoCapTure = cv.VideoCapture(self.videoPath)
+        self.poseInfo = {"videopath": os.path.join(self.SAVE_PATH, os.path.basename(self.videoPath))}
         
     def playAndStop(self):
         if not self.play:
