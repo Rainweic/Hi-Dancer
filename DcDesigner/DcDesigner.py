@@ -3,14 +3,15 @@
 # 本类实现界面的逻辑功能
 
 import sys
-sys.path.append("../")
+sys.path.append("..")
+import cv2 as cv
 import PyQt5 as Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtMultimedia import  *
 from DcDesigner_UI import Ui_MainWindow
-# from model.net import load_model, detection
-# from score.tools import tools
+from model import net
+from score import tools
 
 class DcDesigner(QMainWindow, Ui_MainWindow):
 
@@ -18,6 +19,7 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         super(DcDesigner, self).__init__()
         self.play = False
         self.videoLength = 0.1
+        self.videoCapTure = None
         # 初始化UI
         self.setupUi(self)
         self.showCenter()
@@ -43,7 +45,7 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         hbox.addWidget(label)
         dialog.setLayout(hbox)
         dialog.setWindowModality(Qt.ApplicationModal)
-        # self.net = load_model(use_gpu=False)
+        self.model = net.load_model(use_gpu=False)
         dialog.close()
 
     def showCenter(self):  
@@ -64,11 +66,13 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         self.move(x, y)
 
     def chooseVideoFile(self):
-        self.player.setMedia(QMediaContent(QFileDialog.getOpenFileUrl()[0]))
+        self.videoPath = QFileDialog.getOpenFileUrl()[0]
+        self.player.setMedia(QMediaContent(self.videoPath))
+        self.videoCapTure = cv.VideoCapture(str(self.videoPath)[25:-2])
         
     def playAndStop(self):
         if not self.play:
-            # 开始播放
+            # 开始播放import net
             self.playOrStop.setText("暂停")
             self.play = True
             self.player.play()
@@ -98,8 +102,13 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         '''
         保存当前帧拥有的动作骨架
         '''
-        print(self.player.currentMedia())
-        pass    
+        if self.videoCapTure == None:
+            QMessageBox.warning(self, "警告！", "请选择视频文件！")
+            return None
+        self.videoCapTure.set(cv.CAP_PROP_POS_MSEC, int(self.player.position()))    # 通过ms进行定位
+        ret, frame = self.videoCapTure.read()   # 获取帧
+        # TODO: 骨架预测
+        
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
