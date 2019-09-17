@@ -9,7 +9,7 @@
         [
             {
                 "timeid": 1232,
-                "reactime": 0.5,
+                "reactime": "0.5",
                 "score":  10,
                 "posepoints": []
             },
