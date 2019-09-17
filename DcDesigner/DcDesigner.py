@@ -5,6 +5,8 @@
 import os
 import sys
 sys.path.append("..")
+import json
+import shutil
 import cv2 as cv
 import PyQt5 as Qt
 from PyQt5.QtWidgets import *
@@ -21,6 +23,7 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(DcDesigner, self).__init__()
         self.play = False
+        self.isFirst = True
         self.videoLength = 0.1
         self.videoCapTure = None
         # 初始化UI
@@ -39,17 +42,21 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
 
     def load_model(self):
         '''
-        加载模型 并弹出提示
+        加载模型 并弹出提示 
         '''
         dialog = QDialog()
         dialog.setWindowTitle("提示")
-        hbox = QHBoxLayout()
-        label = QLabel("模型加载中...", self)
-        hbox.addWidget(label)
-        dialog.setLayout(hbox)
-        dialog.setWindowModality(Qt.ApplicationModal)
-        self.model = net.load_model(use_gpu=False)
-        dialog.close()
+        label = QLabel("模型加载中...\n初次使用会自动下载模型...", dialog)
+        label.setWordWrap(True)
+        closeButton = QPushButton("完成", dialog)
+        closeButton.setEnabled(False)
+        dialog.resize(250, 180)
+        dialog.setWindowModality(Qt.WindowModal)
+        dialog.show()
+        closeButton.clicked.connect(dialog.close)
+        self.model, flag = net.load_model(use_gpu=False)
+        if flag:
+            closeButton.setEnabled(True)
 
     def showCenter(self):  
         '''
@@ -70,10 +77,13 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
 
     def chooseVideoFile(self):
         videoPathQT = QFileDialog.getOpenFileUrl()[0]
-        self.videoPath = str(videoPathQT)[25:-2]
+        self.videoPath = str(videoPathQT)[26:-2]
+        print(self.videoPath)
         self.player.setMedia(QMediaContent(videoPathQT))
         self.videoCapTure = cv.VideoCapture(self.videoPath)
-        self.poseInfo = {"videopath": os.path.join(self.SAVE_PATH, os.path.basename(self.videoPath))}
+        self.isFirst = True
+        self.poseInfo = {"videopath": os.path.join(self.SAVE_PATH, "video", os.path.basename(self.videoPath))}   # 存放整个视频动作信息
+        self.info = []  # 存放每张图片动作信息
         
     def playAndStop(self):
         if not self.play:
@@ -103,6 +113,16 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         '''
         self.player.setPosition(self.horizontalSlider.value())
 
+    def moveVideo(oldPath, newPath="../poseinfo/video"):
+        '''
+        将视频文件搬运到指定位置： ../poseinfo/video
+        '''
+        if not os.path.exists(newPath):
+            os.mkdir(newPath)
+            print("新建文件夹ing")
+
+        shutil.copy(oldPath, newPath)
+
     def saveAction(self):
         '''
         保存当前帧拥有的动作骨架
@@ -110,10 +130,38 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         if self.videoCapTure == None:
             QMessageBox.warning(self, "警告！", "请选择视频文件！")
             return None
+
         self.videoCapTure.set(cv.CAP_PROP_POS_MSEC, int(self.player.position()))    # 通过ms进行定位
         ret, frame = self.videoCapTure.read()   # 获取帧
-        # TODO: 骨架预测
+        # Test 为啥可以正常显示但是frame确为0
+        cv.imshow("resr", frame)
+        print(ret, frame)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
         
+
+        # # 骨架信息预测
+        # pred, img = net.detection(self.model, frame, False)
+        # if self.isFirst:
+        #     self.dist, skeleton = tools.normalization(pred['pred_coords'][0])
+        #     self.isFirst = False
+        #     # 移动视频文件
+        #     self.moveVideo(self.videoPath)
+        # else:
+        #     dist, skeleton = tools.normalization(pred['pred_coords'][0], dis=self.dist)
+
+        # # 信息写入文件
+        # infoItem = {
+        #     "timeid": int(self.player.duration()),
+        #     "reactime": self.reacTime.text(),
+        #     "score": (self.Score.currentIndex()+1) * 2,
+        #     "posepoints": int(skeleton.asnumpy()) 
+        # }
+        # self.info.append(infoItem)
+        # self.poseInfo["info"] = self.info
+        # with open(os.path.join(self.SAVE_PATH, self.videoPath+".json"), "w") as f:
+        #     f.write(json.dumps(self.poseInfo))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
