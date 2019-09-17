@@ -1,6 +1,6 @@
 from mxnet import nd, cpu, gpu
 
-def normalization(x, dis=None):
+def normalization(x, dis=[]):
     '''
     将人物骨架归一化：
         以头部胸部点为坐标原点，各坐标点减去胸部点坐标，同时测出头部与脚部的距离，各坐标点除以该距离
@@ -15,7 +15,7 @@ def normalization(x, dis=None):
     
     # 鼻子部位坐标点
     arm_point = (x[5] + x[6]) / 2
-    if dis == None:
+    if len(dis) == 0:
         # 头脚距离（以最大值为准）
         dis = nd.max(x, (0, 1)) - nd.min(x, (0, 1))
 

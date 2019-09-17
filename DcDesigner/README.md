@@ -9,16 +9,18 @@
 #### 正在实现姿势检测功能。。。
 
 #### 关卡信息文件格式：
+```
 {
     "videopath": ""
     "info":
         [
             {
                 "timeid": 1232,
-                "reactime": 0.5,
+                "reactime": "0.5",
                 "score":  10,
                 "posepoints": []
             },
             {},
         ]
 }
+```

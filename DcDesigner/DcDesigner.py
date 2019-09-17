@@ -26,8 +26,10 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         self.isFirst = True
         self.videoLength = 0.1
         self.videoCapTure = None
+        self.saveAction = SaveAction(self)
         # 初始化UI
         self.setupUi(self)
+        self.menuBar.setNativeMenuBar(False)
         self.showCenter()
         self.load_model()
         # 播放器
@@ -38,25 +40,14 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         self.playOrStop.clicked.connect(self.playAndStop)
         self.player.positionChanged.connect(self.setSlide)
         self.horizontalSlider.sliderReleased.connect(self.changePosition)
-        self.addAction.clicked.connect(self.saveAction)
+        self.addAction.clicked.connect(self.saveAction.start)
 
     def load_model(self):
         '''
         加载模型 并弹出提示 
         '''
-        dialog = QDialog()
-        dialog.setWindowTitle("提示")
-        label = QLabel("模型加载中...\n初次使用会自动下载模型...", dialog)
-        label.setWordWrap(True)
-        closeButton = QPushButton("完成", dialog)
-        closeButton.setEnabled(False)
-        dialog.resize(250, 180)
-        dialog.setWindowModality(Qt.WindowModal)
-        dialog.show()
-        closeButton.clicked.connect(dialog.close)
+        QMessageBox.information(self, "提示", "模型即将加载,请等待...初次使用软件会自动后台下载模型...")
         self.model, flag = net.load_model(use_gpu=False)
-        if flag:
-            closeButton.setEnabled(True)
 
     def showCenter(self):  
         '''
@@ -78,7 +69,6 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
     def chooseVideoFile(self):
         videoPathQT = QFileDialog.getOpenFileUrl()[0]
         self.videoPath = str(videoPathQT)[26:-2]
-        print(self.videoPath)
         self.player.setMedia(QMediaContent(videoPathQT))
         self.videoCapTure = cv.VideoCapture(self.videoPath)
         self.isFirst = True
@@ -113,54 +103,57 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
         '''
         self.player.setPosition(self.horizontalSlider.value())
 
-    def moveVideo(oldPath, newPath="../poseinfo/video"):
+    def moveVideo(self, oldPath, newPath="../poseinfo/video"):
         '''
         将视频文件搬运到指定位置： ../poseinfo/video
         '''
         if not os.path.exists(newPath):
             os.mkdir(newPath)
-            print("新建文件夹ing")
 
         shutil.copy(oldPath, newPath)
+
+        
+class SaveAction(QThread):
+    def __init__(self, widget):
+        super(SaveAction, self).__init__()
+        self.widget = widget
+
+    def run(self):
+        self.saveAction()
 
     def saveAction(self):
         '''
         保存当前帧拥有的动作骨架
         '''
-        if self.videoCapTure == None:
-            QMessageBox.warning(self, "警告！", "请选择视频文件！")
+        if self.widget.videoCapTure == None:
+            QMessageBox.warning(self.widget, "警告！", "请选择视频文件！")
             return None
 
-        self.videoCapTure.set(cv.CAP_PROP_POS_MSEC, int(self.player.position()))    # 通过ms进行定位
-        ret, frame = self.videoCapTure.read()   # 获取帧
-        # Test 为啥可以正常显示但是frame确为0
-        cv.imshow("resr", frame)
-        print(ret, frame)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
-        
+        self.widget.videoCapTure.set(cv.CAP_PROP_POS_MSEC, int(self.widget.player.position()))    # 通过ms进行定位
+        ret, frame = self.widget.videoCapTure.read()   # 获取帧
 
-        # # 骨架信息预测
-        # pred, img = net.detection(self.model, frame, False)
-        # if self.isFirst:
-        #     self.dist, skeleton = tools.normalization(pred['pred_coords'][0])
-        #     self.isFirst = False
-        #     # 移动视频文件
-        #     self.moveVideo(self.videoPath)
-        # else:
-        #     dist, skeleton = tools.normalization(pred['pred_coords'][0], dis=self.dist)
+        # 骨架信息预测
+        pred, img = net.detection(self.widget.model, frame, False)
+        if self.widget.isFirst:
+            self.widget.dist, skeleton = tools.normalization(pred['pred_coords'][0])
+            self.widget.isFirst = False
+            # 移动视频文件
+            self.widget.moveVideo(self.widget.videoPath)
+        else:
+            dist, skeleton = tools.normalization(pred['pred_coords'][0], dis=self.widget.dist)
 
-        # # 信息写入文件
-        # infoItem = {
-        #     "timeid": int(self.player.duration()),
-        #     "reactime": self.reacTime.text(),
-        #     "score": (self.Score.currentIndex()+1) * 2,
-        #     "posepoints": int(skeleton.asnumpy()) 
-        # }
-        # self.info.append(infoItem)
-        # self.poseInfo["info"] = self.info
-        # with open(os.path.join(self.SAVE_PATH, self.videoPath+".json"), "w") as f:
-        #     f.write(json.dumps(self.poseInfo))
+        # 信息写入文件
+        infoItem = {
+            "timeid": int(self.widget.player.duration()),
+            "reactime": self.widget.reacTime.text(),
+            "score": (self.widget.Score.currentIndex()+1) * 2,
+            "posepoints": skeleton.asnumpy().tolist()
+        }
+        self.widget.info.append(infoItem)
+        self.widget.poseInfo["info"] = self.widget.info
+        savePath = os.path.realpath(os.path.join(self.widget.SAVE_PATH, os.path.basename(self.widget.videoPath)+".json"))
+        with open(savePath, "w") as f:
+            f.write(json.dumps(self.widget.poseInfo))
 
 
 if __name__ == "__main__":
