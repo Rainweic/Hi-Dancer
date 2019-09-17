@@ -52,6 +52,7 @@ class Ui_MainWindow(object):
         self.lb_reacTime.setObjectName("lb_reacTime")
         self.horizontalLayout_2.addWidget(self.lb_reacTime)
         self.reacTime = QtWidgets.QLineEdit(self.layoutWidget)
+        self.reacTime.setPlaceholderText("0.5")
         self.reacTime.setObjectName("reacTime")
         self.horizontalLayout_2.addWidget(self.reacTime)
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
