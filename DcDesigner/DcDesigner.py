@@ -68,7 +68,7 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
 
     def chooseVideoFile(self):
         videoPathQT = QFileDialog.getOpenFileUrl()[0]
-        self.videoPath = str(videoPathQT)[26:-2]
+        self.videoPath = str(videoPathQT)[27:-2]    # 这个地方有毒 ubuntu是26 Window是27...
         self.player.setMedia(QMediaContent(videoPathQT))
         self.videoCapTure = cv.VideoCapture(self.videoPath)
         self.isFirst = True
@@ -125,15 +125,19 @@ class SaveAction(QThread):
         '''
         保存当前帧拥有的动作骨架
         '''
-        if self.widget.videoCapTure == None:
+        self.playPause()
+        if self.widget.videoCapTure == None or self.widget.videoPath == None:
             QMessageBox.warning(self.widget, "警告！", "请选择视频文件！")
             return None
 
         self.widget.videoCapTure.set(cv.CAP_PROP_POS_MSEC, int(self.widget.player.position()))    # 通过ms进行定位
-        ret, frame = self.widget.videoCapTure.read()   # 获取帧
+        ret, frame = self.widget.videoCapTure.read()   # 获取帧 
 
         # 骨架信息预测
-        pred, img = net.detection(self.widget.model, frame, False)
+        pred, img = net.detection(self.widget.model, frame, False)  # TODO: 在这一行卡死
+        if pred == None:
+            QMessageBox.warning(self.widget, "警告", "当前图像中未检测到人体，无法保存动作！")
+            return None
         if self.widget.isFirst:
             self.widget.dist, skeleton = tools.normalization(pred['pred_coords'][0])
             self.widget.isFirst = False
@@ -155,8 +159,13 @@ class SaveAction(QThread):
         with open(savePath, "w") as f:
             f.write(json.dumps(self.widget.poseInfo))
 
+    def playPause(self):
+        self.widget.playOrStop.setText("播放")
+        self.widget.play = False
+        self.widget.player.pause()
 
 if __name__ == "__main__":
+    os.environ["MXNET_CUDNN_AUTOTUNE_DEFAULT"] = str(0)
     app = QApplication(sys.argv)
     Dc = DcDesigner()
     Dc.show()

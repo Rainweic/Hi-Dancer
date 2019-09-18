@@ -49,7 +49,7 @@ def detection(net, image, use_gpu):
         image(str):     图片(numpy)
         use_gpu(bool):  是否使用gpu
     return:
-        pred(dict):     包含各种信息的字典
+        pred(dict):     包含各种信息的字典（若未检测到人则该返回值为None）
         img(numpy):     图片
     '''
     if use_gpu:
@@ -62,18 +62,26 @@ def detection(net, image, use_gpu):
                             max_size=1024,
                             mean=(0.485, 0.456, 0.406),
                             std=(0.229, 0.224, 0.225))
-    x = x.as_in_context(ctx)
+    if use_gpu:
+        # 转移至GPU
+        x = x.as_in_context(ctx)
     class_IDs, scores, bounding_boxs = net['detector'](x)
     pose_input, upscale_bbox = detector_to_simple_pose(img, class_IDs, scores,
                                                        bounding_boxs)
-
-    pose_input = pose_input.as_in_context(ctx)
-    predicted_heatmap = net['pose_net'](pose_input)
-    pred_coords, confidence = heatmap_to_coord(predicted_heatmap, upscale_bbox)
+    
+    if len(upscale_bbox) == 0:
+        # 图片中未检测到人
+        return None, img
 
     if use_gpu:
-        # pred_coords转移至GPU
-        pred_coords = pred_coords.as_in_context(mx.gpu())
+        # 转移至GPU
+        pose_input = pose_input.as_in_context(ctx)
+    predicted_heatmap = net['pose_net'](pose_input)
+    pred_coords, confidence = heatmap_to_coord(predicted_heatmap, upscale_bbox)
+    
+    if use_gpu:
+        # 转移至GPU
+        pred_coords = pred_coords.as_in_context(ctx)
 
     pred = {
         'class_IDs': class_IDs,
