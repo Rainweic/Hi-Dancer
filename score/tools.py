@@ -1,12 +1,13 @@
 from mxnet import nd, cpu, gpu
 
-def normalization(x):
+def normalization(x, dis=[]):
     '''
     将人物骨架归一化：
         以头部胸部点为坐标原点，各坐标点减去胸部点坐标，同时测出头部与脚部的距离，各坐标点除以该距离
     
     input:
         x(ndarray):  二维的人体骨架关键点数组
+        dis(ndarray):人体骨架头脚距离
     return:
         dis(float):  头脚距离最大值
         y(ndarray):  处理后二维人体骨架关键点数组
@@ -14,8 +15,9 @@ def normalization(x):
     
     # 鼻子部位坐标点
     arm_point = (x[5] + x[6]) / 2
-    # 头脚距离（以最大值为准）
-    dis = nd.max(x, (0, 1)) - nd.min(x, (0, 1))
+    if len(dis) == 0:
+        # 头脚距离（以最大值为准）
+        dis = nd.max(x, (0, 1)) - nd.min(x, (0, 1))
 
     # 各坐标点减去鼻子点坐标
     x = x - arm_point
