@@ -1,9 +1,8 @@
-import sys
-import json
 import os
 import cv2
-sys.path.append("..")
-import myGlobal as gl
+import sys
+import json
+import GlobalConfig as gl
 
 def findAllJsonPath(path):
     '''
@@ -51,7 +50,6 @@ def resolveJson(path):
     info = fileJson['info']
 
     return {'videopath':videoPath, 'info':info}
-
 
 def getVideosInfo(path):
     '''
