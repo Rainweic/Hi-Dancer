@@ -2,7 +2,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import cv2
 import time
-sys.path.append("..")
 from MyTimer import *
 from PyQt5.Qt import QUrl, QVideoWidget
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent, QMediaPlaylist

@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMainWindow, QDes
 import Backend
 import os
 import sys
-sys.path.append("..")
 import myGlobal as gl
 
 class Ui_MainWindow(QMainWindow):

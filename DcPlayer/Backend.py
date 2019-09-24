@@ -2,7 +2,6 @@ import sys
 import json
 import os
 import cv2
-sys.path.append("..")
 import myGlobal as gl
 
 def findAllJsonPath(path):

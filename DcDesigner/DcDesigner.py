@@ -4,7 +4,6 @@
 
 import os
 import sys
-sys.path.append("..")
 import json
 import shutil
 import cv2 as cv
@@ -12,9 +11,9 @@ import PyQt5 as Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtMultimedia import  *
-from DcDesigner_UI import Ui_MainWindow
+from frame.DcDesigner_UI import Ui_MainWindow
 from model import net
-from score import tools
+from core import tools
 
 class DcDesigner(QMainWindow, Ui_MainWindow):
 

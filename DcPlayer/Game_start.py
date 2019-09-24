@@ -1,9 +1,8 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication
 import os
 import sys
-sys.path.append("..")
 import myGlobal as gl
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from model import net
 
 
