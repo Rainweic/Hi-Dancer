@@ -6,13 +6,14 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import os
+import sys
+sys.path.append("..")
+import Backend
+import GlobalConfig as gl
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon,QStandardItem,QStandardItemModel
 from PyQt5.QtWidgets import QGridLayout, QPushButton, QWidget, QMainWindow, QDesktopWidget, QAction, qApp, QListView
-import Backend
-import os
-import sys
-import myGlobal as gl
 
 class Ui_MainWindow(QMainWindow):
 

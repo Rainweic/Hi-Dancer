@@ -1,8 +1,8 @@
-import sys
-import json
 import os
 import cv2
-import myGlobal as gl
+import sys
+import json
+import GlobalConfig as gl
 
 def findAllJsonPath(path):
     '''

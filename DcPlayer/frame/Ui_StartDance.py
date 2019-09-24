@@ -7,22 +7,23 @@
 # WARNING! All changes made in this file will be lost!
 
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+
 import sys
+sys.path.append("..")
 import cv2
 import time
+import mxnet
+import numpy as np
+import threading
+from PyQt5 import QtCore, QtGui, QtWidgets
 from MyTimer import *
 from PyQt5.Qt import QUrl, QVideoWidget
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent, QMediaPlaylist
 from model import net
 from core import tools
-import myGlobal as gl
+import GlobalConfig as gl
 from Backend import *
-import mxnet
-import numpy as np
-import threading
 from DanceMatching import *
-
 
 class Ui_Dialog(QtWidgets.QDialog):
 

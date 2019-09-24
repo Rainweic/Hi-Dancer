@@ -1,18 +1,17 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import cv2
 import time
+import mxnet
+import threading
+import numpy as np
+import GlobalConfig as gl
+from Backend import *
 from MyTimer import *
-from PyQt5.Qt import QUrl, QVideoWidget
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent, QMediaPlaylist
 from model import net
 from core import tools
-import myGlobal as gl
-from Backend import *
-import mxnet
-import numpy as np
-import threading
-
+from PyQt5.Qt import QUrl, QVideoWidget
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent, QMediaPlaylist
 
 
 class DanceMatching(QtCore.QThread):

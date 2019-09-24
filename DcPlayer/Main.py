@@ -1,9 +1,6 @@
 import sys
 from PyQt5.QtWidgets import  QApplication
-import Game_start
-import gundou
-import Ui_StartDance
-
+from frame import Game_start, gundou, Ui_StartDance
 
 if __name__ == '__main__':
     #实例化窗口和APP
@@ -22,7 +19,7 @@ if __name__ == '__main__':
     main_menubar = chooseFrame.main_menubar
     main_menubar.triggered.connect(lambda:gameStartFrame.show())
     main_menubar.triggered.connect(lambda:chooseFrame.close())
-
+ 
     #开始游戏按钮
     Button_start = gameStartFrame.pushButton_2
     Button_start.clicked.connect(lambda:chooseFrame.show())
