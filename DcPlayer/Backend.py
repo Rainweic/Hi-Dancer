@@ -51,7 +51,6 @@ def resolveJson(path):
 
     return {'videopath':videoPath, 'info':info}
 
-
 def getVideosInfo(path):
     '''
         获取所有json文件的所有信息
