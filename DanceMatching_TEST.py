@@ -30,9 +30,3 @@ playerDis ,playerSkeleton = tools.normalization(playerPre['pred_coords'][0])
 #匹配计算分数并输出结果
 score = tools.matching(playerSkeleton, showerSkeleton, use_gpu=use_gpu)
 print("匹配得分{}".format(score))
-
-
-
-
-
-

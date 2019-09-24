@@ -68,7 +68,11 @@ class DcDesigner(QMainWindow, Ui_MainWindow):
 
     def chooseVideoFile(self):
         videoPathQT = QFileDialog.getOpenFileUrl()[0]
+        print("*****************************")
+        print(videoPathQT)
         self.videoPath = str(videoPathQT)[27:-2]    # 这个地方有毒 ubuntu是26 Window是27...
+        print(self.videoPath)
+        print(QMediaContent(videoPathQT))
         self.player.setMedia(QMediaContent(videoPathQT))
         self.videoCapTure = cv.VideoCapture(self.videoPath)
         self.isFirst = True
@@ -148,7 +152,7 @@ class SaveAction(QThread):
 
         # 信息写入文件
         infoItem = {
-            "timeid": int(self.widget.player.duration()),
+            "timeid": int(self.widget.horizontalSlider.value()),
             "reactime": self.widget.reacTime.text(),
             "score": (self.widget.Score.currentIndex()+1) * 2,
             "posepoints": skeleton.asnumpy().tolist()
